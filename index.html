@@ -160,6 +160,62 @@
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
+        
+        /* Estilos para Admin Only */
+        .admin-only {
+            display: none;
+        }
+        
+        .admin-only.show {
+            display: block;
+        }
+        
+        /* Estilos para Tasks Drag and Drop */
+        .task-card {
+            cursor: move;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .task-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .task-card.dragging {
+            opacity: 0.5;
+            transform: rotate(5deg);
+        }
+        
+        .drop-zone {
+            min-height: 100px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .drop-zone.drag-over {
+            background-color: rgba(59, 130, 246, 0.1);
+            border: 2px dashed #3b82f6;
+        }
+        
+        /* Status Colors */
+        .status-todo { border-left: 4px solid #f59e0b; }
+        .status-progress { border-left: 4px solid #3b82f6; }
+        .status-done { border-left: 4px solid #10b981; }
+        
+        /* Attachment Preview */
+        .attachment-preview {
+            max-width: 60px;
+            max-height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .attachment-preview:hover {
+            transform: scale(1.1);
+            transition: transform 0.2s ease;
+        }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen mobile-optimized">
@@ -170,7 +226,7 @@
                 <div class="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
                     <i class="fas fa-cogs text-2xl text-blue-600"></i>
                 </div>
-                <h1 class="text-2xl font-bold text-gray-800">AdmTools</h1>
+                <h1 class="text-2xl font-bold text-gray-800">Gerenciador de Sistemas</h1>
                 <p class="text-gray-600 mt-2">Faça login para acessar o sistema</p>
             </div>
             
@@ -271,7 +327,7 @@
                 <div>
                     <h1 class="text-lg md:text-xl font-bold">
                         <i class="fas fa-cogs mr-2"></i>
-                        Ferramenta do Técnico
+                        Gerenciador de Sistemas
                     </h1>
                     <div class="text-xs md:text-sm mt-1">
                         <span class="connection-status" id="connection-indicator"></span>
@@ -314,7 +370,7 @@
 
             <!-- Tab Navigation -->
             <div class="bg-white rounded-xl shadow-lg mb-6 fade-in">
-                <div class="flex flex-wrap border-b overflow-x-auto">
+                                <div class="flex flex-wrap border-b overflow-x-auto">
                     <button onclick="openTab(event, &#39;menus-tab&#39;)" class="tab-button px-4 py-3 border-b-2 border-blue-600 text-blue-600 font-medium whitespace-nowrap">
                         <i class="fas fa-list mr-2"></i>Menus
                     </button>
@@ -326,6 +382,12 @@
                     </button>
                     <button onclick="openTab(event, &#39;sql-tab&#39;)" class="tab-button px-4 py-3 border-b-2 border-transparent text-gray-600 hover:text-blue-600 whitespace-nowrap">
                         <i class="fas fa-database mr-2"></i>Consultas SQL
+                    </button>
+                    <button onclick="openTab(event, &#39;users-tab&#39;)" class="tab-button px-4 py-3 border-b-2 border-transparent text-gray-600 hover:text-blue-600 whitespace-nowrap admin-only">
+                        <i class="fas fa-users mr-2"></i>Usuários
+                    </button>
+                    <button onclick="openTab(event, &#39;attendance-tab&#39;)" class="tab-button px-4 py-3 border-b-2 border-transparent text-gray-600 hover:text-blue-600 whitespace-nowrap">
+                        <i class="fas fa-headset mr-2"></i>Atendimento Externo
                     </button>
                 </div>
 
@@ -391,6 +453,132 @@
                     </div>
                     <div id="saved-queries" class="space-y-2">
                         <!-- Consultas salvas aparecerão aqui -->
+                    </div>
+                </div>
+
+                <!-- Tab Usuários (Admin Only) -->
+                <div id="users-tab" class="tab-content p-4 md:p-6">
+                    <h3 class="text-lg font-semibold mb-4">Gerenciar Usuários</h3>
+                    <div class="bg-gray-50 p-4 rounded-lg mb-6">
+                        <h4 class="font-medium mb-4">Criar Novo Usuário</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <input type="text" id="new-user-name" placeholder="Nome completo" class="p-3 border rounded-lg"/>
+                            <input type="text" id="new-user-username" placeholder="Nome de usuário" class="p-3 border rounded-lg"/>
+                            <input type="password" id="new-user-password" placeholder="Senha" class="p-3 border rounded-lg"/>
+                            <select id="new-user-role" class="p-3 border rounded-lg">
+                                <option value="user">Usuário</option>
+                                <option value="admin">Administrador</option>
+                            </select>
+                        </div>
+                        <div class="mb-4">
+                            <h5 class="font-medium mb-2">Permissões:</h5>
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="perm-menus" class="mr-2" checked=""/>
+                                    <span class="text-sm">Gerenciar Menus</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="perm-xml" class="mr-2" checked=""/>
+                                    <span class="text-sm">Validar XML</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="perm-notes" class="mr-2" checked=""/>
+                                    <span class="text-sm">Anotações</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="perm-sql" class="mr-2" checked=""/>
+                                    <span class="text-sm">Consultas SQL</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="perm-database" class="mr-2" checked=""/>
+                                    <span class="text-sm">Banco de Dados</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="perm-downloads" class="mr-2" checked=""/>
+                                    <span class="text-sm">Downloads</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="perm-sites" class="mr-2" checked=""/>
+                                    <span class="text-sm">Sites Úteis</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="perm-attendance" class="mr-2" checked=""/>
+                                    <span class="text-sm">Atendimento</span>
+                                </label>
+                            </div>
+                        </div>
+                        <button onclick="createUser()" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition duration-200">
+                            <i class="fas fa-user-plus mr-2"></i>Criar Usuário
+                        </button>
+                    </div>
+                    <div id="users-list" class="space-y-2">
+                        <!-- Lista de usuários aparecerá aqui -->
+                    </div>
+                </div>
+
+                <!-- Tab Atendimento Externo -->
+                <div id="attendance-tab" class="tab-content p-4 md:p-6">
+                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                        <!-- Anotações de Atendimento -->
+                        <div class="bg-white border rounded-lg p-4">
+                            <h3 class="text-lg font-semibold mb-4">Anotações de Atendimento</h3>
+                            <div class="space-y-4 mb-4">
+                                <input type="text" id="client-cnpj" placeholder="CNPJ do Cliente" class="w-full p-3 border rounded-lg" maxlength="18"/>
+                                <input type="text" id="attendance-title" placeholder="Título do atendimento" class="w-full p-3 border rounded-lg"/>
+                                <textarea id="attendance-notes" placeholder="Anotações do atendimento..." class="w-full h-32 p-3 border rounded-lg"></textarea>
+                                <button onclick="saveAttendanceNote()" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-200">
+                                    <i class="fas fa-save mr-2"></i>Salvar Atendimento
+                                </button>
+                            </div>
+                            <div id="attendance-notes-list" class="space-y-2 max-h-96 overflow-y-auto">
+                                <!-- Anotações de atendimento aparecerão aqui -->
+                            </div>
+                        </div>
+
+                        <!-- Sistema de Tarefas To-Do -->
+                        <div class="bg-white border rounded-lg p-4">
+                            <h3 class="text-lg font-semibold mb-4">Tarefas (To-Do)</h3>
+                            <div class="mb-4">
+                                <div class="flex flex-col gap-2 mb-2">
+                                    <input type="text" id="task-title" placeholder="Título da tarefa" class="w-full p-3 border rounded-lg"/>
+                                    <textarea id="task-description" placeholder="Descrição da tarefa..." class="w-full h-20 p-3 border rounded-lg"></textarea>
+                                    <input type="file" id="task-files" multiple="" accept="image/*,*/*" class="w-full p-2 border rounded-lg"/>
+                                    <button onclick="createTask()" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition duration-200">
+                                        <i class="fas fa-plus mr-2"></i>Criar Tarefa
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Kanban Board -->
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                                    <h4 class="font-medium text-yellow-800 mb-3 text-center">
+                                        <i class="fas fa-clock mr-2"></i>A Fazer
+                                    </h4>
+                                    <div id="todo-column" class="space-y-2 min-h-32" ondrop="drop(event)" ondragover="allowDrop(event)" data-status="todo">
+                                        <!-- Tarefas "A Fazer" aparecerão aqui -->
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                                    <h4 class="font-medium text-blue-800 mb-3 text-center">
+                                        <i class="fas fa-play mr-2"></i>Em Andamento
+                                    </h4>
+                                    <div id="progress-column" class="space-y-2 min-h-32" ondrop="drop(event)" ondragover="allowDrop(event)" data-status="progress">
+                                        <!-- Tarefas "Em Andamento" aparecerão aqui -->
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-green-50 border border-green-200 rounded-lg p-3">
+                                    <h4 class="font-medium text-green-800 mb-3 text-center">
+                                        <i class="fas fa-check mr-2"></i>Concluído
+                                    </h4>
+                                    <div id="done-column" class="space-y-2 min-h-32" ondrop="drop(event)" ondragover="allowDrop(event)" data-status="done">
+                                        <!-- Tarefas "Concluído" aparecerão aqui -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -655,6 +843,9 @@
         let connectionStatus = 'disconnected';
         let currentConnection = null;
         let pwaPrompt = null;
+        let attendanceNotes = [];
+        let tasks = [];
+        let draggedElement = null;
         
         // =============================
         // INICIALIZAÇÃO
@@ -1277,13 +1468,16 @@
         function setupAdminControls() {
             const adminControls = document.getElementById('admin-controls');
             const importBtn = document.getElementById('import-sites-btn');
+            const adminOnlyElements = document.querySelectorAll('.admin-only');
             
             if (currentUser && currentUser.role !== 'admin') {
                 if (adminControls) adminControls.style.display = 'none';
                 if (importBtn) importBtn.style.display = 'none';
+                adminOnlyElements.forEach(el => el.classList.remove('show'));
             } else {
                 if (adminControls) adminControls.style.display = 'block';
                 if (importBtn) importBtn.style.display = 'inline-block';
+                adminOnlyElements.forEach(el => el.classList.add('show'));
             }
         }
         
@@ -1366,6 +1560,9 @@
             loadQueries();
             loadDownloads();
             loadSites();
+            loadUsers();
+            loadAttendanceNotes();
+            loadTasks();
         }
         
         function loadMenus() {
@@ -2287,6 +2484,490 @@
         });
         
         // =============================
+        // GERENCIAMENTO DE USUÁRIOS
+        // =============================
+        
+        function createUser() {
+            const name = document.getElementById('new-user-name').value.trim();
+            const username = document.getElementById('new-user-username').value.trim();
+            const password = document.getElementById('new-user-password').value;
+            const role = document.getElementById('new-user-role').value;
+            
+            if (!name || !username || !password) {
+                showToast('Preencha todos os campos obrigatórios', 'warning');
+                return;
+            }
+            
+            if (users.find(u => u.username === username)) {
+                showToast('Nome de usuário já existe', 'error');
+                return;
+            }
+            
+            const permissions = {
+                menus: document.getElementById('perm-menus').checked,
+                xml: document.getElementById('perm-xml').checked,
+                notes: document.getElementById('perm-notes').checked,
+                sql: document.getElementById('perm-sql').checked,
+                database: document.getElementById('perm-database').checked,
+                downloads: document.getElementById('perm-downloads').checked,
+                sites: document.getElementById('perm-sites').checked,
+                attendance: document.getElementById('perm-attendance').checked
+            };
+            
+            const newUser = {
+                id: Date.now(),
+                fullName: name,
+                username,
+                password,
+                role,
+                permissions,
+                createdAt: new Date().toISOString(),
+                createdBy: currentUser.username
+            };
+            
+            users.push(newUser);
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            // Limpar formulário
+            document.getElementById('new-user-name').value = '';
+            document.getElementById('new-user-username').value = '';
+            document.getElementById('new-user-password').value = '';
+            document.getElementById('new-user-role').value = 'user';
+            
+            // Resetar checkboxes
+            document.querySelectorAll('#users-tab input[type="checkbox"]').forEach(cb => cb.checked = true);
+            
+            displayUsers();
+            showToast('Usuário criado com sucesso!', 'success');
+        }
+        
+        function loadUsers() {
+            const savedUsers = localStorage.getItem('users');
+            if (savedUsers) {
+                users = JSON.parse(savedUsers);
+                displayUsers();
+            }
+        }
+        
+        function displayUsers() {
+            const container = document.getElementById('users-list');
+            if (!container) return;
+            
+            container.innerHTML = users.map(user => `
+                <div class="p-4 bg-gray-50 border rounded-lg">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-2">
+                                <strong class="text-lg">${user.fullName}</strong>
+                                <span class="px-2 py-1 text-xs rounded-full ${user.role === 'admin' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'}">
+                                    ${user.role === 'admin' ? 'Administrador' : 'Usuário'}
+                                </span>
+                            </div>
+                            <div class="text-sm text-gray-600 mb-2">
+                                <strong>Usuário:</strong> ${user.username}
+                            </div>
+                            <div class="text-sm text-gray-600 mb-2">
+                                <strong>Criado em:</strong> ${new Date(user.createdAt).toLocaleString('pt-BR')}
+                            </div>
+                            ${user.createdBy ? `
+                                <div class="text-sm text-gray-600 mb-2">
+                                    <strong>Criado por:</strong> ${user.createdBy}
+                                </div>
+                            ` : ''}
+                            ${user.permissions ? `
+                                <div class="text-sm text-gray-600">
+                                    <strong>Permissões:</strong>
+                                    <div class="flex flex-wrap gap-1 mt-1">
+                                        ${Object.entries(user.permissions).filter(([key, value]) => value).map(([key]) => `
+                                            <span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded">
+                                                ${getPermissionName(key)}
+                                            </span>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="editUser(${user.id})" class="text-blue-600 hover:text-blue-800" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            ${user.id !== 1 ? `
+                                <button onclick="deleteUser(${user.id})" class="text-red-600 hover:text-red-800" title="Excluir">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function getPermissionName(key) {
+            const names = {
+                menus: 'Menus',
+                xml: 'XML',
+                notes: 'Anotações',
+                sql: 'SQL',
+                database: 'Banco',
+                downloads: 'Downloads',
+                sites: 'Sites',
+                attendance: 'Atendimento'
+            };
+            return names[key] || key;
+        }
+        
+        function editUser(userId) {
+            const user = users.find(u => u.id === userId);
+            if (!user) return;
+            
+            // Implementar modal de edição (simplificado)
+            const newName = prompt('Nome completo:', user.fullName);
+            if (newName && newName !== user.fullName) {
+                user.fullName = newName;
+                localStorage.setItem('users', JSON.stringify(users));
+                displayUsers();
+                showToast('Usuário atualizado!', 'success');
+            }
+        }
+        
+        function deleteUser(userId) {
+            if (confirm('Tem certeza que deseja excluir este usuário?')) {
+                users = users.filter(u => u.id !== userId);
+                localStorage.setItem('users', JSON.stringify(users));
+                displayUsers();
+                showToast('Usuário excluído!', 'success');
+            }
+        }
+        
+        // =============================
+        // ATENDIMENTO EXTERNO
+        // =============================
+        
+        function saveAttendanceNote() {
+            const cnpj = document.getElementById('client-cnpj').value.trim();
+            const title = document.getElementById('attendance-title').value.trim();
+            const notes = document.getElementById('attendance-notes').value.trim();
+            
+            if (!cnpj || !title || !notes) {
+                showToast('Preencha todos os campos', 'warning');
+                return;
+            }
+            
+            // Validação básica de CNPJ (formato)
+            const cnpjRegex = /^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/;
+            if (!cnpjRegex.test(cnpj)) {
+                // Tentar formatar automaticamente
+                const cleanCnpj = cnpj.replace(/\D/g, '');
+                if (cleanCnpj.length === 14) {
+                    const formattedCnpj = cleanCnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
+                    document.getElementById('client-cnpj').value = formattedCnpj;
+                } else {
+                    showToast('CNPJ deve ter 14 dígitos', 'error');
+                    return;
+                }
+            }
+            
+            const attendanceNote = {
+                id: Date.now(),
+                clientCnpj: document.getElementById('client-cnpj').value,
+                title,
+                notes,
+                createdBy: currentUser.username,
+                createdAt: new Date().toISOString()
+            };
+            
+            attendanceNotes.push(attendanceNote);
+            localStorage.setItem('attendanceNotes', JSON.stringify(attendanceNotes));
+            
+            // Limpar formulário
+            document.getElementById('client-cnpj').value = '';
+            document.getElementById('attendance-title').value = '';
+            document.getElementById('attendance-notes').value = '';
+            
+            displayAttendanceNotes();
+            showToast('Atendimento salvo com sucesso!', 'success');
+        }
+        
+        function loadAttendanceNotes() {
+            const saved = localStorage.getItem('attendanceNotes');
+            if (saved) {
+                attendanceNotes = JSON.parse(saved);
+                displayAttendanceNotes();
+            }
+        }
+        
+        function displayAttendanceNotes() {
+            const container = document.getElementById('attendance-notes-list');
+            if (!container) return;
+            
+            container.innerHTML = attendanceNotes.map(note => `
+                <div class="p-3 bg-gray-50 border rounded-lg">
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <strong class="text-sm">${note.title}</strong>
+                            <div class="text-xs text-gray-600">CNPJ: ${note.clientCnpj}</div>
+                        </div>
+                        <button onclick="removeAttendanceNote(${note.id})" class="text-red-600 hover:text-red-800">
+                            <i class="fas fa-trash text-sm"></i>
+                        </button>
+                    </div>
+                    <div class="text-sm text-gray-700 mb-2 whitespace-pre-wrap">${note.notes}</div>
+                    <div class="text-xs text-gray-500">
+                        Por: ${note.createdBy} - ${new Date(note.createdAt).toLocaleString('pt-BR')}
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function removeAttendanceNote(id) {
+            if (confirm('Tem certeza que deseja remover esta anotação?')) {
+                attendanceNotes = attendanceNotes.filter(note => note.id !== id);
+                localStorage.setItem('attendanceNotes', JSON.stringify(attendanceNotes));
+                displayAttendanceNotes();
+                showToast('Anotação removida!', 'success');
+            }
+        }
+        
+        // Formatação automática do CNPJ
+        document.addEventListener('DOMContentLoaded', function() {
+            const cnpjInput = document.getElementById('client-cnpj');
+            if (cnpjInput) {
+                cnpjInput.addEventListener('input', function(e) {
+                    let value = e.target.value.replace(/\D/g, '');
+                    if (value.length <= 14) {
+                        value = value.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
+                        e.target.value = value;
+                    }
+                });
+            }
+        });
+        
+        // =============================
+        // SISTEMA DE TAREFAS (TO-DO)
+        // =============================
+        
+        function createTask() {
+            const title = document.getElementById('task-title').value.trim();
+            const description = document.getElementById('task-description').value.trim();
+            const filesInput = document.getElementById('task-files');
+            
+            if (!title) {
+                showToast('Digite um título para a tarefa', 'warning');
+                return;
+            }
+            
+            const task = {
+                id: Date.now(),
+                title,
+                description,
+                status: 'todo',
+                attachments: [],
+                createdBy: currentUser.username,
+                createdAt: new Date().toISOString()
+            };
+            
+            // Processar arquivos anexados
+            if (filesInput.files.length > 0) {
+                Array.from(filesInput.files).forEach((file, index) => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        task.attachments.push({
+                            id: Date.now() + index,
+                            name: file.name,
+                            type: file.type,
+                            size: file.size,
+                            dataUrl: e.target.result
+                        });
+                        
+                        if (task.attachments.length === filesInput.files.length) {
+                            saveTask(task);
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                });
+            } else {
+                saveTask(task);
+            }
+            
+            // Limpar formulário
+            document.getElementById('task-title').value = '';
+            document.getElementById('task-description').value = '';
+            filesInput.value = '';
+        }
+        
+        function saveTask(task) {
+            tasks.push(task);
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+            displayTasks();
+            showToast('Tarefa criada com sucesso!', 'success');
+        }
+        
+        function loadTasks() {
+            const saved = localStorage.getItem('tasks');
+            if (saved) {
+                tasks = JSON.parse(saved);
+                displayTasks();
+            }
+        }
+        
+        function displayTasks() {
+            const todoColumn = document.getElementById('todo-column');
+            const progressColumn = document.getElementById('progress-column');
+            const doneColumn = document.getElementById('done-column');
+            
+            if (!todoColumn || !progressColumn || !doneColumn) return;
+            
+            // Limpar colunas
+            todoColumn.innerHTML = '';
+            progressColumn.innerHTML = '';
+            doneColumn.innerHTML = '';
+            
+            tasks.forEach(task => {
+                const taskElement = createTaskElement(task);
+                
+                switch(task.status) {
+                    case 'todo':
+                        todoColumn.appendChild(taskElement);
+                        break;
+                    case 'progress':
+                        progressColumn.appendChild(taskElement);
+                        break;
+                    case 'done':
+                        doneColumn.appendChild(taskElement);
+                        break;
+                }
+            });
+        }
+        
+        function createTaskElement(task) {
+            const div = document.createElement('div');
+            div.className = `task-card bg-white p-3 rounded-lg border shadow-sm status-${task.status}`;
+            div.draggable = true;
+            div.dataset.taskId = task.id;
+            
+            div.innerHTML = `
+                <div class="flex justify-between items-start mb-2">
+                    <strong class="text-sm">${task.title}</strong>
+                    <button onclick="removeTask(${task.id})" class="text-red-600 hover:text-red-800">
+                        <i class="fas fa-trash text-xs"></i>
+                    </button>
+                </div>
+                ${task.description ? `<div class="text-xs text-gray-600 mb-2">${task.description}</div>` : ''}
+                ${task.attachments.length > 0 ? `
+                    <div class="flex flex-wrap gap-1 mb-2">
+                        ${task.attachments.map(att => `
+                            <div class="relative">
+                                ${att.type.startsWith('image/') ? `
+                                    <img src="${att.dataUrl}" alt="${att.name}" class="attachment-preview" onclick="viewAttachment('${att.dataUrl}', '${att.name}')">
+                                ` : `
+                                    <div class="w-8 h-8 bg-gray-200 rounded flex items-center justify-center text-xs cursor-pointer" onclick="downloadAttachment('${att.dataUrl}', '${att.name}')" title="${att.name}">
+                                        <i class="fas fa-file"></i>
+                                    </div>
+                                `}
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : ''}
+                <div class="text-xs text-gray-500">
+                    ${task.createdBy} - ${new Date(task.createdAt).toLocaleDateString('pt-BR')}
+                </div>
+            `;
+            
+            // Event listeners para drag and drop
+            div.addEventListener('dragstart', handleDragStart);
+            div.addEventListener('dragend', handleDragEnd);
+            
+            return div;
+        }
+        
+        function handleDragStart(e) {
+            draggedElement = this;
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', this.outerHTML);
+        }
+        
+        function handleDragEnd(e) {
+            this.classList.remove('dragging');
+            draggedElement = null;
+        }
+        
+        function allowDrop(e) {
+            e.preventDefault();
+            e.currentTarget.classList.add('drag-over');
+        }
+        
+        function drop(e) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('drag-over');
+            
+            if (draggedElement) {
+                const taskId = parseInt(draggedElement.dataset.taskId);
+                const newStatus = e.currentTarget.dataset.status;
+                
+                updateTaskStatus(taskId, newStatus);
+                draggedElement = null;
+            }
+        }
+        
+        function updateTaskStatus(taskId, newStatus) {
+            const task = tasks.find(t => t.id === taskId);
+            if (task) {
+                task.status = newStatus;
+                localStorage.setItem('tasks', JSON.stringify(tasks));
+                displayTasks();
+                showToast('Status da tarefa atualizado!', 'success');
+            }
+        }
+        
+        function removeTask(id) {
+            if (confirm('Tem certeza que deseja remover esta tarefa?')) {
+                tasks = tasks.filter(task => task.id !== id);
+                localStorage.setItem('tasks', JSON.stringify(tasks));
+                displayTasks();
+                showToast('Tarefa removida!', 'success');
+            }
+        }
+        
+        function viewAttachment(dataUrl, name) {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50';
+            modal.innerHTML = `
+                <div class="max-w-4xl max-h-4xl p-4">
+                    <div class="bg-white rounded-lg p-4">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-semibold">${name}</h3>
+                            <button onclick="this.closest('.fixed').remove()" class="text-gray-600 hover:text-gray-800">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <img src="${dataUrl}" alt="${name}" class="max-w-full max-h-96 mx-auto">
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+        
+        function downloadAttachment(dataUrl, name) {
+            const link = document.createElement('a');
+            link.href = dataUrl;
+            link.download = name;
+            link.click();
+        }
+        
+        // Event listeners para drag and drop nas colunas
+        document.addEventListener('DOMContentLoaded', function() {
+            const columns = document.querySelectorAll('[data-status]');
+            columns.forEach(column => {
+                column.addEventListener('dragover', allowDrop);
+                column.addEventListener('drop', drop);
+                column.addEventListener('dragleave', function() {
+                    this.classList.remove('drag-over');
+                });
+            });
+        });
+        
+        // =============================
         // EVENTOS DE CONEXÃO
         // =============================
         
@@ -2313,5 +2994,6 @@
     </script>
     
     <script>window.onload=function(){var d=document.createElement("div");d.id="aionspaceLoadFinished";document.body.appendChild(d);};</script>
+<script>window.onload=function(){var d=document.createElement("div");d.id="aionspaceLoadFinished";document.body.appendChild(d);};</script>
 
 </body></html>
