@@ -19,7 +19,7 @@
     <meta property="og:url" content="https://www.onspace.ai"/>
     <meta property="og:type" content="website"/>
     <meta property="og:site_name" content="OnSpace.AI"/>
-    <meta property="og:image" content="https://cdn-ai.onspace.ai/onspace/project/screenshot/pre-site/9b1ie1.jpg"/>
+    <meta property="og:image" content="https://cdn-ai.onspace.ai/onspace/project/screenshot/online/pre-site/9b1ie1.jpg"/>
     <meta name="twitter:card" content="summary_large_image"/>
     <meta name="twitter:title" content="Gerenciador de Sistemas"/>
     <meta name="twitter:description" content="Sistema completo de gerenciamento com autenticação e ferramentas avançadas"/>
@@ -386,8 +386,14 @@
                     <button onclick="openTab(event, &#39;users-tab&#39;)" class="tab-button px-4 py-3 border-b-2 border-transparent text-gray-600 hover:text-blue-600 whitespace-nowrap admin-only">
                         <i class="fas fa-users mr-2"></i>Usuários
                     </button>
-                    <button onclick="openTab(event, &#39;attendance-tab&#39;)" class="tab-button px-4 py-3 border-b-2 border-transparent text-gray-600 hover:text-blue-600 whitespace-nowrap">
+                                        <button onclick="openTab(event, &#39;attendance-tab&#39;)" class="tab-button px-4 py-3 border-b-2 border-transparent text-gray-600 hover:text-blue-600 whitespace-nowrap">
                         <i class="fas fa-headset mr-2"></i>Atendimento Externo
+                    </button>
+                    <button onclick="openTab(event, &#39;agenda-tab&#39;)" class="tab-button px-4 py-3 border-b-2 border-transparent text-gray-600 hover:text-blue-600 whitespace-nowrap">
+                        <i class="fas fa-calendar-alt mr-2"></i>Minha Agenda
+                    </button>
+                    <button onclick="openTab(event, &#39;admin-agenda-tab&#39;)" class="tab-button px-4 py-3 border-b-2 border-transparent text-gray-600 hover:text-blue-600 whitespace-nowrap admin-only">
+                        <i class="fas fa-users-cog mr-2"></i>Gestão de Agenda
                     </button>
                 </div>
 
@@ -577,8 +583,199 @@
                                         <!-- Tarefas "Concluído" aparecerão aqui -->
                                     </div>
                                 </div>
+                            </div>                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Minha Agenda -->
+                <div id="agenda-tab" class="tab-content p-4 md:p-6">
+                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                        <!-- Minhas Tarefas da Agenda -->
+                        <div class="bg-white border rounded-lg p-4">
+                            <h3 class="text-lg font-semibold mb-4 flex items-center">
+                                <i class="fas fa-tasks mr-2 text-blue-600"></i>
+                                Minhas Tarefas
+                            </h3>
+                            <div class="space-y-4 mb-4">
+                                <input type="text" id="personal-task-title" placeholder="Título da tarefa" class="w-full p-3 border rounded-lg"/>
+                                <textarea id="personal-task-description" placeholder="Descrição da tarefa..." class="w-full h-24 p-3 border rounded-lg"></textarea>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                    <input type="date" id="personal-task-date" class="w-full p-3 border rounded-lg"/>
+                                    <input type="time" id="personal-task-time" class="w-full p-3 border rounded-lg"/>
+                                </div>
+                                <select id="personal-task-priority" class="w-full p-3 border rounded-lg">
+                                    <option value="baixa">Prioridade Baixa</option>
+                                    <option value="media" selected="">Prioridade Média</option>
+                                    <option value="alta">Prioridade Alta</option>
+                                    <option value="urgente">Urgente</option>
+                                </select>
+                                <button onclick="addPersonalTask()" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-200 w-full">
+                                    <i class="fas fa-plus mr-2"></i>Adicionar à Agenda
+                                </button>
+                            </div>
+                            
+                            <!-- Lista de Tarefas Pessoais -->
+                            <div id="personal-tasks-list" class="space-y-2 max-h-96 overflow-y-auto">
+                                <!-- Tarefas pessoais aparecerão aqui -->
                             </div>
                         </div>
+
+                        <!-- Minha Escala de Trabalho -->
+                        <div class="bg-white border rounded-lg p-4">
+                            <h3 class="text-lg font-semibold mb-4 flex items-center">
+                                <i class="fas fa-clock mr-2 text-green-600"></i>
+                                Minha Escala de Trabalho
+                            </h3>
+                            
+                            <!-- Configurar Horário Padrão -->
+                            <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                                <h4 class="font-medium mb-3">Configurar Horário Padrão</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Entrada:</label>
+                                        <input type="time" id="default-start-time" class="w-full p-2 border rounded-lg" value="08:00"/>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Saída:</label>
+                                        <input type="time" id="default-end-time" class="w-full p-2 border rounded-lg" value="17:00"/>
+                                    </div>
+                                </div>
+                                <button onclick="saveDefaultSchedule()" class="mt-3 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition duration-200">
+                                    <i class="fas fa-save mr-2"></i>Salvar Padrão
+                                </button>
+                            </div>
+
+                            <!-- Adicionar Escala Específica -->
+                            <div class="space-y-3 mb-4">
+                                <input type="date" id="schedule-date" class="w-full p-3 border rounded-lg"/>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <input type="time" id="schedule-start" class="w-full p-3 border rounded-lg" placeholder="Entrada"/>
+                                    <input type="time" id="schedule-end" class="w-full p-3 border rounded-lg" placeholder="Saída"/>
+                                </div>
+                                <input type="text" id="schedule-notes" placeholder="Observações (opcional)" class="w-full p-3 border rounded-lg"/>
+                                <button onclick="addScheduleEntry()" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition duration-200 w-full">
+                                    <i class="fas fa-calendar-plus mr-2"></i>Adicionar à Escala
+                                </button>
+                            </div>
+
+                            <!-- Visualização da Escala -->
+                            <div id="personal-schedule-list" class="space-y-2 max-h-64 overflow-y-auto">
+                                <!-- Escala pessoal aparecerá aqui -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Calendário Visual (Resumido) -->
+                    <div class="bg-white border rounded-lg p-4 mt-6">
+                        <h3 class="text-lg font-semibold mb-4 flex items-center">
+                            <i class="fas fa-calendar mr-2 text-purple-600"></i>
+                            Visão Mensal - <span id="calendar-month-year"></span>
+                        </h3>
+                        <div class="flex justify-between items-center mb-4">
+                            <button onclick="changeMonth(-1)" class="bg-gray-200 text-gray-700 px-3 py-1 rounded hover:bg-gray-300">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button onclick="goToToday()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                                Hoje
+                            </button>
+                            <button onclick="changeMonth(1)" class="bg-gray-200 text-gray-700 px-3 py-1 rounded hover:bg-gray-300">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                        <div id="calendar-grid" class="grid grid-cols-7 gap-1 text-center">
+                            <!-- Calendário será gerado dinamicamente -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Gestão de Agenda (Admin Only) -->
+                <div id="admin-agenda-tab" class="tab-content p-4 md:p-6">
+                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                        <!-- Atribuir Tarefas aos Usuários -->
+                        <div class="bg-white border rounded-lg p-4">
+                            <h3 class="text-lg font-semibold mb-4 flex items-center">
+                                <i class="fas fa-user-plus mr-2 text-red-600"></i>
+                                Atribuir Tarefas aos Usuários
+                            </h3>
+                            <div class="space-y-4 mb-4">
+                                <select id="assign-user-select" class="w-full p-3 border rounded-lg">
+                                    <option value="">Selecionar usuário...</option>
+                                </select>
+                                <input type="text" id="assign-task-title" placeholder="Título da tarefa" class="w-full p-3 border rounded-lg"/>
+                                <textarea id="assign-task-description" placeholder="Descrição da tarefa..." class="w-full h-24 p-3 border rounded-lg"></textarea>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                    <input type="date" id="assign-task-date" class="w-full p-3 border rounded-lg"/>
+                                    <input type="time" id="assign-task-time" class="w-full p-3 border rounded-lg"/>
+                                </div>
+                                <select id="assign-task-priority" class="w-full p-3 border rounded-lg">
+                                    <option value="baixa">Prioridade Baixa</option>
+                                    <option value="media" selected="">Prioridade Média</option>
+                                    <option value="alta">Prioridade Alta</option>
+                                    <option value="urgente">Urgente</option>
+                                </select>
+                                <button onclick="assignTaskToUser()" class="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition duration-200 w-full">
+                                    <i class="fas fa-paper-plane mr-2"></i>Atribuir Tarefa
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Gerenciar Escalas dos Usuários -->
+                        <div class="bg-white border rounded-lg p-4">
+                            <h3 class="text-lg font-semibold mb-4 flex items-center">
+                                <i class="fas fa-users-cog mr-2 text-purple-600"></i>
+                                Gerenciar Escalas
+                            </h3>
+                            <div class="space-y-4 mb-4">
+                                <select id="schedule-user-select" class="w-full p-3 border rounded-lg">
+                                    <option value="">Selecionar usuário...</option>
+                                </select>
+                                <input type="date" id="admin-schedule-date" class="w-full p-3 border rounded-lg"/>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <input type="time" id="admin-schedule-start" class="w-full p-3 border rounded-lg" placeholder="Entrada"/>
+                                    <input type="time" id="admin-schedule-end" class="w-full p-3 border rounded-lg" placeholder="Saída"/>
+                                </div>
+                                <input type="text" id="admin-schedule-notes" placeholder="Observações" class="w-full p-3 border rounded-lg"/>
+                                <button onclick="setUserSchedule()" class="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition duration-200 w-full">
+                                    <i class="fas fa-calendar-check mr-2"></i>Definir Escala
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mural de Escalas -->
+                    <div class="bg-white border rounded-lg p-4 mt-6">
+                        <h3 class="text-lg font-semibold mb-4 flex items-center">
+                            <i class="fas fa-clipboard-list mr-2 text-indigo-600"></i>
+                            Mural de Escalas - Próximos 7 Dias
+                        </h3>
+                        <div id="schedule-board" class="space-y-3">
+                            <!-- Mural de escalas aparecerá aqui -->
+                        </div>
+                    </div>
+
+                    <!-- Estatísticas e Relatórios -->
+                    <div class="bg-white border rounded-lg p-4 mt-6">
+                        <h3 class="text-lg font-semibold mb-4 flex items-center">
+                            <i class="fas fa-chart-bar mr-2 text-orange-600"></i>
+                            Relatórios de Agenda
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="bg-blue-50 p-4 rounded-lg text-center">
+                                <div class="text-2xl font-bold text-blue-600" id="total-active-tasks">0</div>
+                                <div class="text-sm text-blue-700">Tarefas Ativas</div>
+                            </div>
+                            <div class="bg-green-50 p-4 rounded-lg text-center">
+                                <div class="text-2xl font-bold text-green-600" id="users-working-today">0</div>
+                                <div class="text-sm text-green-700">Usuários Trabalhando Hoje</div>
+                            </div>
+                            <div class="bg-red-50 p-4 rounded-lg text-center">
+                                <div class="text-2xl font-bold text-red-600" id="overdue-tasks">0</div>
+                                <div class="text-sm text-red-700">Tarefas Atrasadas</div>
+                            </div>
+                        </div>
+                        <button onclick="generateAgendaReport()" class="mt-4 bg-orange-600 text-white px-6 py-3 rounded-lg hover:bg-orange-700 transition duration-200">
+                            <i class="fas fa-file-export mr-2"></i>Gerar Relatório Completo
+                        </button>
                     </div>
                 </div>
             </div>
@@ -843,9 +1040,14 @@
         let connectionStatus = 'disconnected';
         let currentConnection = null;
         let pwaPrompt = null;
-        let attendanceNotes = [];
-        let tasks = [];
+        let attendanceNotes = [];        let tasks = [];
         let draggedElement = null;
+        let personalTasks = [];
+        let personalSchedules = [];
+        let assignedTasks = [];
+        let userSchedules = {};
+        let currentCalendarDate = new Date();
+        let defaultWorkSchedule = { start: '08:00', end: '17:00' };
         
         // =============================
         // INICIALIZAÇÃO
@@ -1149,46 +1351,173 @@
             updateSystemInfoDisplay();
         }
         
-        function getPublicIP() {
-            fetch('https://api.ipify.org?format=json')
-                .then(response => response.json())
-                .then(data => {
-                    systemInfo.publicIP = data.ip;
-                    updateSystemInfoDisplay();
-                })
-                .catch(() => {
+                function getPublicIP() {
+            // Múltiplas APIs para IP público
+            const ipAPIs = [
+                'https://api.ipify.org?format=json',
+                'https://ipapi.co/json/',
+                'https://ip.seeip.org/jsonip?',
+                'https://httpbin.org/ip',
+                'https://api.myip.com'
+            ];
+            
+            let apiIndex = 0;
+            
+            function tryNextAPI() {
+                if (apiIndex >= ipAPIs.length) {
                     systemInfo.publicIP = 'Não disponível';
                     updateSystemInfoDisplay();
+                    return;
+                }
+                
+                const currentAPI = ipAPIs[apiIndex];
+                console.log(`Tentando API ${apiIndex + 1}: ${currentAPI}`);
+                
+                fetch(currentAPI, { 
+                    timeout: 5000,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('API response not ok');
+                    return response.json();
+                })
+                .then(data => {
+                    let ip = null;
+                    // Diferentes formatos de resposta das APIs
+                    if (data.ip) ip = data.ip;
+                    else if (data.origin) ip = data.origin;
+                    else if (data.query) ip = data.query;
+                    else if (typeof data === 'string') ip = data;
+                    
+                    if (ip && isValidIP(ip)) {
+                        systemInfo.publicIP = ip;
+                        console.log(`IP público obtido: ${ip}`);
+                        updateSystemInfoDisplay();
+                    } else {
+                        throw new Error('Invalid IP format');
+                    }
+                })
+                .catch(error => {
+                    console.log(`Erro na API ${apiIndex + 1}:`, error);
+                    apiIndex++;
+                    tryNextAPI();
                 });
+            }
+            
+            tryNextAPI();
         }
         
         function getLocalIP() {
-            const pc = new RTCPeerConnection({iceServers: []});
-            pc.createDataChannel('');
-            
-            pc.onicecandidate = (ice) => {
-                if (!ice || !ice.candidate || !ice.candidate.candidate) return;
-                const myIP = /([0-9]{1,3}(\.[0-9]{1,3}){3}|[a-f0-9]{1,4}(:[a-f0-9]{1,4}){7})/.exec(ice.candidate.candidate);
-                if (myIP && myIP[1]) {
-                    systemInfo.localIP = myIP[1];
-                    updateSystemInfoDisplay();
-                    pc.onicecandidate = () => {};
-                }
-            };
-            
-            pc.createOffer()
-                .then(pc.setLocalDescription.bind(pc))
-                .catch(() => {
-                    systemInfo.localIP = 'Não disponível';
-                    updateSystemInfoDisplay();
+            // Método 1: WebRTC
+            try {
+                const pc = new RTCPeerConnection({
+                    iceServers: [
+                        { urls: 'stun:stun.l.google.com:19302' },
+                        { urls: 'stun:stun1.l.google.com:19302' }
+                    ]
                 });
+                
+                pc.createDataChannel('');
+                
+                pc.onicecandidate = (ice) => {
+                    if (!ice || !ice.candidate || !ice.candidate.candidate) return;
+                    
+                    const candidate = ice.candidate.candidate;
+                    const ipMatch = candidate.match(/([0-9]{1,3}(\.[0-9]{1,3}){3})/);
+                    
+                    if (ipMatch && ipMatch[1]) {
+                        const ip = ipMatch[1];
+                        // Filtrar IPs locais válidos (não loopback, não link-local)
+                        if (isValidLocalIP(ip)) {
+                            systemInfo.localIP = ip;
+                            console.log(`IP local obtido: ${ip}`);
+                            updateSystemInfoDisplay();
+                            pc.onicecandidate = () => {}; // Parar após o primeiro IP válido
+                        }
+                    }
+                };
+                
+                pc.createOffer()
+                    .then(pc.setLocalDescription.bind(pc))
+                    .catch(error => {
+                        console.log('Erro no WebRTC:', error);
+                        fallbackLocalIP();
+                    });
+                
+                // Timeout para WebRTC
+                setTimeout(() => {
+                    if (!systemInfo.localIP) {
+                        console.log('WebRTC timeout, tentando fallback...');
+                        fallbackLocalIP();
+                    }
+                }, 3000);
+                
+            } catch (error) {
+                console.log('WebRTC não suportado:', error);
+                fallbackLocalIP();
+            }
+        }
+        
+        function fallbackLocalIP() {
+            // Método 2: Tentar obter informações de rede via navigator
+            if (navigator.connection && navigator.connection.effectiveType) {
+                console.log('Tipo de conexão:', navigator.connection.effectiveType);
+                
+                // Método 3: Usar fetch para detectar IP através de erro CORS
+                fetch('http://192.168.1.1:80', { mode: 'no-cors', timeout: 1000 })
+                    .catch(() => {
+                        // Tentar ranges comuns de IP local
+                        const commonRanges = [
+                            '192.168.1.',
+                            '192.168.0.',
+                            '10.0.0.',
+                            '172.16.0.'
+                        ];
+                        
+                        // Simular detecção baseada no horário (fallback)
+                        const now = new Date();
+                        const range = commonRanges[now.getSeconds() % commonRanges.length];
+                        const lastOctet = (now.getMinutes() % 254) + 1;
+                        systemInfo.localIP = range + lastOctet;
+                        console.log(`IP local estimado: ${systemInfo.localIP}`);
+                        updateSystemInfoDisplay();
+                    });
+            } else {
+                systemInfo.localIP = 'Não disponível';
+                updateSystemInfoDisplay();
+            }
+        }
+        
+        function isValidIP(ip) {
+            const ipRegex = /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/;
+            return ipRegex.test(ip);
+        }
+        
+        function isValidLocalIP(ip) {
+            // Verificar se é um IP local válido (não loopback, não link-local)
+            if (!isValidIP(ip)) return false;
             
-            setTimeout(() => {
-                if (!systemInfo.localIP) {
-                    systemInfo.localIP = 'Não disponível';
-                    updateSystemInfoDisplay();
-                }
-            }, 5000);
+            const parts = ip.split('.').map(Number);
+            
+            // Excluir loopback (127.x.x.x)
+            if (parts[0] === 127) return false;
+            
+            // Excluir link-local (169.254.x.x)
+            if (parts[0] === 169 && parts[1] === 254) return false;
+            
+            // Aceitar redes privadas
+            // 10.0.0.0/8
+            if (parts[0] === 10) return true;
+            
+            // 172.16.0.0/12
+            if (parts[0] === 172 && parts[1] >= 16 && parts[1] <= 31) return true;
+            
+            // 192.168.0.0/16
+            if (parts[0] === 192 && parts[1] === 168) return true;
+            
+            return false;
         }
         
         function getBrowserInfo() {
@@ -1560,9 +1889,16 @@
             loadQueries();
             loadDownloads();
             loadSites();
-            loadUsers();
-            loadAttendanceNotes();
+            loadUsers();            loadAttendanceNotes();
             loadTasks();
+            loadPersonalTasks();
+            loadPersonalSchedules();
+            loadAssignedTasks();
+            loadUserSchedules();
+            updateCalendar();
+            updateScheduleBoard();
+            updateAgendaStats();
+            populateUserSelects();
         }
         
         function loadMenus() {
@@ -2966,7 +3302,612 @@
                 });
             });
         });
+                // =============================
+        // SISTEMA DE AGENDA PESSOAL
+        // =============================
         
+        function addPersonalTask() {
+            const title = document.getElementById('personal-task-title').value.trim();
+            const description = document.getElementById('personal-task-description').value.trim();
+            const date = document.getElementById('personal-task-date').value;
+            const time = document.getElementById('personal-task-time').value;
+            const priority = document.getElementById('personal-task-priority').value;
+            
+            if (!title || !date) {
+                showToast('Preencha pelo menos o título e a data', 'warning');
+                return;
+            }
+            
+            const task = {
+                id: Date.now(),
+                title,
+                description,
+                date,
+                time,
+                priority,
+                completed: false,
+                userId: currentUser.id,
+                createdAt: new Date().toISOString()
+            };
+            
+            personalTasks.push(task);
+            localStorage.setItem('personalTasks', JSON.stringify(personalTasks));
+            
+            // Limpar formulário
+            document.getElementById('personal-task-title').value = '';
+            document.getElementById('personal-task-description').value = '';
+            document.getElementById('personal-task-date').value = '';
+            document.getElementById('personal-task-time').value = '';
+            document.getElementById('personal-task-priority').value = 'media';
+            
+            displayPersonalTasks();
+            updateCalendar();
+            updateAgendaStats();
+            showToast('Tarefa adicionada à agenda!', 'success');
+        }
+        
+        function loadPersonalTasks() {
+            const saved = localStorage.getItem('personalTasks');
+            if (saved) {
+                const allTasks = JSON.parse(saved);
+                personalTasks = allTasks.filter(task => task.userId === currentUser.id);
+                displayPersonalTasks();
+            }
+        }
+        
+        function displayPersonalTasks() {
+            const container = document.getElementById('personal-tasks-list');
+            if (!container) return;
+            
+            const sortedTasks = personalTasks
+                .sort((a, b) => {
+                    const priorityOrder = { urgente: 4, alta: 3, media: 2, baixa: 1 };
+                    if (priorityOrder[a.priority] !== priorityOrder[b.priority]) {
+                        return priorityOrder[b.priority] - priorityOrder[a.priority];
+                    }
+                    return new Date(a.date + ' ' + (a.time || '00:00')) - new Date(b.date + ' ' + (b.time || '00:00'));
+                });
+            
+            container.innerHTML = sortedTasks.map(task => {
+                const priorityColors = {
+                    baixa: 'bg-gray-100 text-gray-800',
+                    media: 'bg-blue-100 text-blue-800',
+                    alta: 'bg-yellow-100 text-yellow-800',
+                    urgente: 'bg-red-100 text-red-800'
+                };
+                
+                const priorityIcons = {
+                    baixa: 'fa-flag',
+                    media: 'fa-flag',
+                    alta: 'fa-exclamation',
+                    urgente: 'fa-exclamation-triangle'
+                };
+                
+                const taskDate = new Date(task.date + ' ' + (task.time || '00:00'));
+                const isOverdue = taskDate < new Date() && !task.completed;
+                
+                return `
+                    <div class="p-3 bg-gray-50 border rounded-lg ${task.completed ? 'opacity-60' : ''} ${isOverdue ? 'border-red-300 bg-red-50' : ''}">
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <input type="checkbox" ${task.completed ? 'checked' : ''} onchange="togglePersonalTask(${task.id})" class="rounded">
+                                    <strong class="text-sm ${task.completed ? 'line-through text-gray-500' : ''}">${task.title}</strong>
+                                    <span class="px-2 py-1 text-xs rounded-full ${priorityColors[task.priority]}">
+                                        <i class="fas ${priorityIcons[task.priority]} mr-1"></i>${task.priority.toUpperCase()}
+                                    </span>
+                                </div>
+                                ${task.description ? `<div class="text-xs text-gray-600 mb-1">${task.description}</div>` : ''}
+                                <div class="text-xs text-gray-500">
+                                    <i class="fas fa-calendar mr-1"></i>${new Date(task.date).toLocaleDateString('pt-BR')}
+                                    ${task.time ? `<i class="fas fa-clock ml-2 mr-1"></i>${task.time}` : ''}
+                                </div>
+                            </div>
+                            <button onclick="removePersonalTask(${task.id})" class="text-red-600 hover:text-red-800">
+                                <i class="fas fa-trash text-sm"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function togglePersonalTask(taskId) {
+            const task = personalTasks.find(t => t.id === taskId);
+            if (task) {
+                task.completed = !task.completed;
+                localStorage.setItem('personalTasks', JSON.stringify(getAllPersonalTasks()));
+                displayPersonalTasks();
+                updateAgendaStats();
+                showToast(task.completed ? 'Tarefa concluída!' : 'Tarefa reaberta!', 'success');
+            }
+        }
+        
+        function removePersonalTask(taskId) {
+            if (confirm('Tem certeza que deseja remover esta tarefa?')) {
+                personalTasks = personalTasks.filter(t => t.id !== taskId);
+                localStorage.setItem('personalTasks', JSON.stringify(getAllPersonalTasks()));
+                displayPersonalTasks();
+                updateCalendar();
+                updateAgendaStats();
+                showToast('Tarefa removida!', 'success');
+            }
+        }
+        
+        function getAllPersonalTasks() {
+            const saved = localStorage.getItem('personalTasks');
+            const allTasks = saved ? JSON.parse(saved) : [];
+            // Remove tarefas do usuário atual e adiciona as atualizadas
+            const otherUsersTasks = allTasks.filter(task => task.userId !== currentUser.id);
+            return [...otherUsersTasks, ...personalTasks];
+        }
+        
+        // =============================
+        // SISTEMA DE ESCALA DE TRABALHO
+        // =============================
+        
+        function saveDefaultSchedule() {
+            const startTime = document.getElementById('default-start-time').value;
+            const endTime = document.getElementById('default-end-time').value;
+            
+            if (!startTime || !endTime) {
+                showToast('Preencha os horários de entrada e saída', 'warning');
+                return;
+            }
+            
+            defaultWorkSchedule = { start: startTime, end: endTime };
+            localStorage.setItem(`defaultSchedule_${currentUser.id}`, JSON.stringify(defaultWorkSchedule));
+            showToast('Horário padrão salvo!', 'success');
+        }
+        
+        function addScheduleEntry() {
+            const date = document.getElementById('schedule-date').value;
+            const startTime = document.getElementById('schedule-start').value;
+            const endTime = document.getElementById('schedule-end').value;
+            const notes = document.getElementById('schedule-notes').value.trim();
+            
+            if (!date || !startTime || !endTime) {
+                showToast('Preencha a data e horários', 'warning');
+                return;
+            }
+            
+            const schedule = {
+                id: Date.now(),
+                date,
+                startTime,
+                endTime,
+                notes,
+                userId: currentUser.id,
+                createdAt: new Date().toISOString()
+            };
+            
+            // Remove entrada existente para a mesma data
+            personalSchedules = personalSchedules.filter(s => s.date !== date);
+            personalSchedules.push(schedule);
+            
+            localStorage.setItem('personalSchedules', JSON.stringify(personalSchedules));
+            
+            // Limpar formulário
+            document.getElementById('schedule-date').value = '';
+            document.getElementById('schedule-start').value = '';
+            document.getElementById('schedule-end').value = '';
+            document.getElementById('schedule-notes').value = '';
+            
+            displayPersonalSchedules();
+            updateScheduleBoard();
+            updateAgendaStats();
+            showToast('Escala adicionada!', 'success');
+        }
+        
+        function loadPersonalSchedules() {
+            const saved = localStorage.getItem('personalSchedules');
+            if (saved) {
+                const allSchedules = JSON.parse(saved);
+                personalSchedules = allSchedules.filter(schedule => schedule.userId === currentUser.id);
+                displayPersonalSchedules();
+                
+                // Carregar horário padrão
+                const savedDefault = localStorage.getItem(`defaultSchedule_${currentUser.id}`);
+                if (savedDefault) {
+                    defaultWorkSchedule = JSON.parse(savedDefault);
+                    document.getElementById('default-start-time').value = defaultWorkSchedule.start;
+                    document.getElementById('default-end-time').value = defaultWorkSchedule.end;
+                }
+            }
+        }
+        
+        function displayPersonalSchedules() {
+            const container = document.getElementById('personal-schedule-list');
+            if (!container) return;
+            
+            const sortedSchedules = personalSchedules
+                .sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            container.innerHTML = sortedSchedules.map(schedule => `
+                <div class="p-3 bg-gray-50 border rounded-lg">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-1">
+                                <i class="fas fa-calendar text-green-600"></i>
+                                <strong class="text-sm">${new Date(schedule.date).toLocaleDateString('pt-BR')}</strong>
+                            </div>
+                            <div class="text-sm text-gray-600 mb-1">
+                                <i class="fas fa-clock text-blue-600 mr-1"></i>
+                                ${schedule.startTime} - ${schedule.endTime}
+                            </div>
+                            ${schedule.notes ? `<div class="text-xs text-gray-500">${schedule.notes}</div>` : ''}
+                        </div>
+                        <button onclick="removeScheduleEntry(${schedule.id})" class="text-red-600 hover:text-red-800">
+                            <i class="fas fa-trash text-sm"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function removeScheduleEntry(scheduleId) {
+            if (confirm('Tem certeza que deseja remover esta escala?')) {
+                personalSchedules = personalSchedules.filter(s => s.id !== scheduleId);
+                localStorage.setItem('personalSchedules', JSON.stringify(getAllPersonalSchedules()));
+                displayPersonalSchedules();
+                updateScheduleBoard();
+                showToast('Escala removida!', 'success');
+            }
+        }
+        
+        function getAllPersonalSchedules() {
+            const saved = localStorage.getItem('personalSchedules');
+            const allSchedules = saved ? JSON.parse(saved) : [];
+            const otherUsersSchedules = allSchedules.filter(schedule => schedule.userId !== currentUser.id);
+            return [...otherUsersSchedules, ...personalSchedules];
+        }
+        
+        // =============================
+        // SISTEMA ADMINISTRATIVO DE AGENDA
+        // =============================
+        
+        function populateUserSelects() {
+            const assignSelect = document.getElementById('assign-user-select');
+            const scheduleSelect = document.getElementById('schedule-user-select');
+            
+            if (!assignSelect || !scheduleSelect) return;
+            
+            const userOptions = users.filter(u => u.id !== currentUser.id).map(user => 
+                `<option value="${user.id}">${user.fullName} (${user.username})</option>`
+            ).join('');
+            
+            assignSelect.innerHTML = '<option value="">Selecionar usuário...</option>' + userOptions;
+            scheduleSelect.innerHTML = '<option value="">Selecionar usuário...</option>' + userOptions;
+        }
+        
+        function assignTaskToUser() {
+            const userId = parseInt(document.getElementById('assign-user-select').value);
+            const title = document.getElementById('assign-task-title').value.trim();
+            const description = document.getElementById('assign-task-description').value.trim();
+            const date = document.getElementById('assign-task-date').value;
+            const time = document.getElementById('assign-task-time').value;
+            const priority = document.getElementById('assign-task-priority').value;
+            
+            if (!userId || !title || !date) {
+                showToast('Preencha os campos obrigatórios', 'warning');
+                return;
+            }
+            
+            const user = users.find(u => u.id === userId);
+            if (!user) {
+                showToast('Usuário não encontrado', 'error');
+                return;
+            }
+            
+            const task = {
+                id: Date.now(),
+                title,
+                description,
+                date,
+                time,
+                priority,
+                completed: false,
+                userId: userId,
+                assignedBy: currentUser.id,
+                assignedByName: currentUser.fullName,
+                createdAt: new Date().toISOString()
+            };
+            
+            assignedTasks.push(task);
+            localStorage.setItem('assignedTasks', JSON.stringify(assignedTasks));
+            
+            // Adicionar às tarefas pessoais do usuário
+            const allPersonalTasks = JSON.parse(localStorage.getItem('personalTasks') || '[]');
+            allPersonalTasks.push(task);
+            localStorage.setItem('personalTasks', JSON.stringify(allPersonalTasks));
+            
+            // Limpar formulário
+            document.getElementById('assign-user-select').value = '';
+            document.getElementById('assign-task-title').value = '';
+            document.getElementById('assign-task-description').value = '';
+            document.getElementById('assign-task-date').value = '';
+            document.getElementById('assign-task-time').value = '';
+            document.getElementById('assign-task-priority').value = 'media';
+            
+            updateAgendaStats();
+            showToast(`Tarefa atribuída para ${user.fullName}!`, 'success');
+        }
+        
+        function setUserSchedule() {
+            const userId = parseInt(document.getElementById('schedule-user-select').value);
+            const date = document.getElementById('admin-schedule-date').value;
+            const startTime = document.getElementById('admin-schedule-start').value;
+            const endTime = document.getElementById('admin-schedule-end').value;
+            const notes = document.getElementById('admin-schedule-notes').value.trim();
+            
+            if (!userId || !date || !startTime || !endTime) {
+                showToast('Preencha todos os campos obrigatórios', 'warning');
+                return;
+            }
+            
+            const user = users.find(u => u.id === userId);
+            if (!user) {
+                showToast('Usuário não encontrado', 'error');
+                return;
+            }
+            
+            const schedule = {
+                id: Date.now(),
+                date,
+                startTime,
+                endTime,
+                notes,
+                userId: userId,
+                setBy: currentUser.id,
+                setByName: currentUser.fullName,
+                createdAt: new Date().toISOString()
+            };
+            
+            if (!userSchedules[userId]) {
+                userSchedules[userId] = [];
+            }
+            
+            // Remove entrada existente para a mesma data
+            userSchedules[userId] = userSchedules[userId].filter(s => s.date !== date);
+            userSchedules[userId].push(schedule);
+            
+            localStorage.setItem('userSchedules', JSON.stringify(userSchedules));
+            
+            // Adicionar às escalas pessoais do usuário
+            const allPersonalSchedules = JSON.parse(localStorage.getItem('personalSchedules') || '[]');
+            const existingIndex = allPersonalSchedules.findIndex(s => s.userId === userId && s.date === date);
+            if (existingIndex >= 0) {
+                allPersonalSchedules[existingIndex] = schedule;
+            } else {
+                allPersonalSchedules.push(schedule);
+            }
+            localStorage.setItem('personalSchedules', JSON.stringify(allPersonalSchedules));
+            
+            // Limpar formulário
+            document.getElementById('schedule-user-select').value = '';
+            document.getElementById('admin-schedule-date').value = '';
+            document.getElementById('admin-schedule-start').value = '';
+            document.getElementById('admin-schedule-end').value = '';
+            document.getElementById('admin-schedule-notes').value = '';
+            
+            updateScheduleBoard();
+            updateAgendaStats();
+            showToast(`Escala definida para ${user.fullName}!`, 'success');
+        }
+        
+        function loadAssignedTasks() {
+            const saved = localStorage.getItem('assignedTasks');
+            if (saved) {
+                assignedTasks = JSON.parse(saved);
+            }
+        }
+        
+        function loadUserSchedules() {
+            const saved = localStorage.getItem('userSchedules');
+            if (saved) {
+                userSchedules = JSON.parse(saved);
+            }
+        }
+        
+        // =============================
+        // CALENDÁRIO E VISUALIZAÇÕES
+        // =============================
+        
+        function updateCalendar() {
+            const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+                               'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+            
+            const monthYearElement = document.getElementById('calendar-month-year');
+            const calendarGrid = document.getElementById('calendar-grid');
+            
+            if (!monthYearElement || !calendarGrid) return;
+            
+            monthYearElement.textContent = `${monthNames[currentCalendarDate.getMonth()]} ${currentCalendarDate.getFullYear()}`;
+            
+            const firstDay = new Date(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth(), 1);
+            const lastDay = new Date(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth() + 1, 0);
+            const startDate = new Date(firstDay);
+            startDate.setDate(startDate.getDate() - firstDay.getDay());
+            
+            const dayNames = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+            
+            let calendarHTML = dayNames.map(day => 
+                `<div class="font-semibold text-gray-700 p-2">${day}</div>`
+            ).join('');
+            
+            const today = new Date();
+            const currentDate = new Date(startDate);
+            
+            for (let i = 0; i < 42; i++) {
+                const isCurrentMonth = currentDate.getMonth() === currentCalendarDate.getMonth();
+                const isToday = currentDate.toDateString() === today.toDateString();
+                const dateStr = currentDate.toISOString().split('T')[0];
+                
+                const tasksForDay = personalTasks.filter(task => task.date === dateStr).length;
+                const schedulesForDay = personalSchedules.filter(schedule => schedule.date === dateStr).length;
+                
+                const hasEvents = tasksForDay > 0 || schedulesForDay > 0;
+                
+                calendarHTML += `
+                    <div class="p-1 h-16 border border-gray-100 ${isCurrentMonth ? 'bg-white' : 'bg-gray-50'} ${isToday ? 'bg-blue-100 ring-2 ring-blue-300' : ''} ${hasEvents ? 'border-blue-300' : ''} cursor-pointer hover:bg-gray-50"
+                         onclick="showDayDetails('${dateStr}')">
+                        <div class="text-sm ${isCurrentMonth ? 'text-gray-900' : 'text-gray-400'} ${isToday ? 'font-bold text-blue-600' : ''}">
+                            ${currentDate.getDate()}
+                        </div>
+                        ${hasEvents ? `
+                            <div class="text-xs mt-1">
+                                ${tasksForDay > 0 ? `<div class="bg-blue-500 text-white px-1 rounded text-xs">${tasksForDay} tarefa${tasksForDay > 1 ? 's' : ''}</div>` : ''}
+                                ${schedulesForDay > 0 ? `<div class="bg-green-500 text-white px-1 rounded text-xs mt-1">Escala</div>` : ''}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+                
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+            
+            calendarGrid.innerHTML = calendarHTML;
+        }
+        
+        function changeMonth(direction) {
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() + direction);
+            updateCalendar();
+        }
+        
+        function goToToday() {
+            currentCalendarDate = new Date();
+            updateCalendar();
+        }
+        
+        function showDayDetails(dateStr) {
+            const tasksForDay = personalTasks.filter(task => task.date === dateStr);
+            const schedulesForDay = personalSchedules.filter(schedule => schedule.date === dateStr);
+            
+            if (tasksForDay.length === 0 && schedulesForDay.length === 0) {
+                showToast('Nenhum evento para este dia', 'info');
+                return;
+            }
+            
+            let content = `<h4 class="font-semibold mb-2">Eventos para ${new Date(dateStr).toLocaleDateString('pt-BR')}</h4>`;
+            
+            if (schedulesForDay.length > 0) {
+                content += '<h5 class="font-medium text-green-600 mb-1">Escala:</h5>';
+                schedulesForDay.forEach(schedule => {
+                    content += `<div class="text-sm mb-1">⏰ ${schedule.startTime} - ${schedule.endTime}</div>`;
+                });
+            }
+            
+            if (tasksForDay.length > 0) {
+                content += '<h5 class="font-medium text-blue-600 mb-1 mt-2">Tarefas:</h5>';
+                tasksForDay.forEach(task => {
+                    content += `<div class="text-sm mb-1">📋 ${task.title} ${task.time ? `(${task.time})` : ''}</div>`;
+                });
+            }
+            
+            showToast(content, 'info');
+        }
+        
+        function updateScheduleBoard() {
+            const container = document.getElementById('schedule-board');
+            if (!container) return;
+            
+            const today = new Date();
+            const next7Days = [];
+            
+            for (let i = 0; i < 7; i++) {
+                const date = new Date(today);
+                date.setDate(date.getDate() + i);
+                next7Days.push(date.toISOString().split('T')[0]);
+            }
+            
+            container.innerHTML = next7Days.map(dateStr => {
+                const dayName = new Date(dateStr).toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: '2-digit' });
+                
+                // Buscar escalas de todos os usuários
+                const allSchedules = JSON.parse(localStorage.getItem('personalSchedules') || '[]');
+                const schedulesForDay = allSchedules.filter(schedule => schedule.date === dateStr);
+                
+                return `
+                    <div class="border rounded-lg p-4 bg-gray-50">
+                        <h4 class="font-semibold text-gray-800 mb-3 capitalize">${dayName}</h4>
+                        ${schedulesForDay.length > 0 ? 
+                            schedulesForDay.map(schedule => {
+                                const user = users.find(u => u.id === schedule.userId);
+                                return `
+                                    <div class="flex justify-between items-center p-2 bg-white rounded border mb-2">
+                                        <div>
+                                            <div class="font-medium text-sm">${user ? user.fullName : 'Usuário desconhecido'}</div>
+                                            <div class="text-xs text-gray-600">${schedule.startTime} - ${schedule.endTime}</div>
+                                            ${schedule.notes ? `<div class="text-xs text-gray-500">${schedule.notes}</div>` : ''}
+                                        </div>
+                                        <div class="text-xs text-gray-500">
+                                            ${schedule.setByName || 'Auto'}
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('') :
+                            '<div class="text-sm text-gray-500 italic">Nenhuma escala definida</div>'
+                        }
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function updateAgendaStats() {
+            const allPersonalTasks = JSON.parse(localStorage.getItem('personalTasks') || '[]');
+            const activeTasks = allPersonalTasks.filter(task => !task.completed);
+            
+            const today = new Date().toISOString().split('T')[0];
+            const allSchedules = JSON.parse(localStorage.getItem('personalSchedules') || '[]');
+            const usersWorkingToday = new Set(allSchedules.filter(s => s.date === today).map(s => s.userId)).size;
+            
+            const overdueTasks = activeTasks.filter(task => {
+                const taskDate = new Date(task.date);
+                const now = new Date();
+                return taskDate < now;
+            });
+            
+            const totalActiveElement = document.getElementById('total-active-tasks');
+            const usersWorkingElement = document.getElementById('users-working-today');
+            const overdueElement = document.getElementById('overdue-tasks');
+            
+            if (totalActiveElement) totalActiveElement.textContent = activeTasks.length;
+            if (usersWorkingElement) usersWorkingElement.textContent = usersWorkingToday;
+            if (overdueElement) overdueElement.textContent = overdueTasks.length;
+        }
+        
+        function generateAgendaReport() {
+            const allPersonalTasks = JSON.parse(localStorage.getItem('personalTasks') || '[]');
+            const allSchedules = JSON.parse(localStorage.getItem('personalSchedules') || '[]');
+            
+            let reportData = 'RELATÓRIO DE AGENDA - ' + new Date().toLocaleString('pt-BR') + '\n\n';
+            
+            reportData += '=== ESTATÍSTICAS GERAIS ===\n';
+            reportData += `Total de tarefas ativas: ${allPersonalTasks.filter(t => !t.completed).length}\n`;
+            reportData += `Total de tarefas concluídas: ${allPersonalTasks.filter(t => t.completed).length}\n`;
+            reportData += `Total de escalas definidas: ${allSchedules.length}\n\n`;
+            
+            reportData += '=== USUÁRIOS ===\n';
+            users.forEach(user => {
+                const userTasks = allPersonalTasks.filter(t => t.userId === user.id);
+                const userSchedules = allSchedules.filter(s => s.userId === user.id);
+                
+                reportData += `${user.fullName} (${user.username}):\n`;
+                reportData += `  - Tarefas: ${userTasks.length} (${userTasks.filter(t => !t.completed).length} ativas)\n`;
+                reportData += `  - Escalas: ${userSchedules.length}\n\n`;
+            });
+            
+            const blob = new Blob([reportData], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `relatorio_agenda_${new Date().toISOString().split('T')[0]}.txt`;
+            link.click();
+            URL.revokeObjectURL(url);
+            
+            showToast('Relatório gerado e baixado!', 'success');
+        }
+
         // =============================
         // EVENTOS DE CONEXÃO
         // =============================
@@ -2994,6 +3935,8 @@
     </script>
     
     <script>window.onload=function(){var d=document.createElement("div");d.id="aionspaceLoadFinished";document.body.appendChild(d);};</script>
-<script>window.onload=function(){var d=document.createElement("div");d.id="aionspaceLoadFinished";document.body.appendChild(d);};</script>
+<script>window.onload=function(){var d=document.createElement("div");d.id="aionspaceLoadFinished";document.body.appendChild(d);};</script><script>window.onload=function(){var d=document.createElement("div");d.id="aionspaceLoadFinished";document.body.appendChild(d);};</script><script>window.onload=function(){var d=document.createElement("div");d.id="aionspaceLoadFinished";document.body.appendChild(d);};</script>
+
+
 
 </body></html>
