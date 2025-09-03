@@ -1,0 +1,311 @@
+/* Estilos personalizados para melhor responsividade */
+        .otimizado-mobile {
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .senha-oculta {
+            font-family: 'Courier New', monospace;
+            letter-spacing: 2px;
+        }
+        
+        .menu-flutuante {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            z-index: 1000;
+        }
+        
+        .item-menu {
+            margin-bottom: 10px;
+            transform: scale(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .item-menu.mostrar {
+            transform: scale(1);
+        }
+        
+        .conteudo-aba {
+            display: none;
+        }
+        
+        .conteudo-aba.ativo {
+            display: block;
+        }
+        
+        .status-conexao {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        
+        .status-conectado { background-color: #10b981; }
+        .status-desconectado { background-color: #ef4444; }
+        .status-conectando { background-color: #f59e0b; animation: pulse 1s infinite; }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .carregador {
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #3498db;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Melhorias de responsividade */
+        @media (max-width: 768px) {
+            .grade-responsiva {
+                grid-template-columns: 1fr;
+            }
+            
+            .texto-responsivo {
+                font-size: 0.875rem;
+            }
+            
+            .p-responsivo {
+                padding: 0.75rem;
+            }
+        }
+        
+        /* Animações suaves */
+        .aparecer-suave {
+            animation: aparecerSuave 0.5s ease-in;
+        }
+        
+        @keyframes aparecerSuave {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Estilos para PWA */
+        .banner-instalacao {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            z-index: 1001;
+        }
+        
+        .banner-instalacao.mostrar {
+            transform: translateY(0);
+        }
+        
+        /* Overlay de loading */
+        .overlay-carregamento {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            backdrop-filter: blur(4px);
+        }
+        
+        .carregador-spinning {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        /* Estilos para Admin Only */
+        .apenas-admin {
+            display: none;
+        }
+        
+        .apenas-admin.mostrar {
+            display: block;
+        }
+        
+        /* Estilos para Tasks Drag and Drop */
+        .cartao-tarefa {
+            cursor: move;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .cartao-tarefa:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .cartao-tarefa.arrastando {
+            opacity: 0.5;
+            transform: rotate(5deg);
+        }
+        
+        .zona-soltar {
+            min-height: 100px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .zona-soltar.arrastar-sobre {
+            background-color: rgba(59, 130, 246, 0.1);
+            border: 2px dashed #3b82f6;
+        }
+        
+        /* Status Colors */
+        .status-fazendo { border-left: 4px solid #f59e0b; }
+        .status-progresso { border-left: 4px solid #3b82f6; }
+        .status-concluido { border-left: 4px solid #10b981; }
+        
+        /* Attachment Preview */
+        .preview-anexo {
+            max-width: 60px;
+            max-height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .preview-anexo:hover {
+            transform: scale(1.1);
+            transition: transform 0.2s ease;
+        }
+
+        /* Estilos Base de Conhecimento */
+        .item-conhecimento {
+            transition: all 0.3s ease;
+        }
+        
+        .item-conhecimento:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .busca-conhecimento {
+            position: relative;
+        }
+        
+        .resultado-busca {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 10;
+        }
+        
+        .video-responsivo {
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%;
+        }
+        
+        .video-responsivo video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Sistema de Permissões */
+        .permissao-negada {
+            opacity: 0.5;
+            pointer-events: none;
+            filter: grayscale(100%);
+        }
+        
+        .badge-permissao {
+            font-size: 0.7rem;
+            padding: 0.125rem 0.375rem;
+            border-radius: 9999px;
+        }
+
+        /* Card Senhas Toggleable */
+        .card-senhas {
+            transition: all 0.3s ease;
+        }
+
+        .card-senhas.oculto {
+            height: 60px;
+            overflow: hidden;
+        }
+
+        .card-senhas.oculto .conteudo-senhas {
+            display: none;
+        }
+
+        /* Máscaras de input */
+        .mascara-cnpj {
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Status atendimento */
+        .status-atendimento {
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-pendente {
+            background-color: #fef3c7;
+            color: #d97706;
+        }
+
+        .status-em-andamento {
+            background-color: #dbeafe;
+            color: #2563eb;
+        }
+
+        .status-concluido {
+            background-color: #d1fae5;
+            color: #059669;
+        }
+
+        /* Filtros de pesquisa */
+        .filtros-pesquisa {
+            gap: 0.5rem;
+        }
+
+        /* Cards de cliente */
+        .card-cliente {
+            transition: all 0.2s ease;
+        }
+
+        .card-cliente:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        /* Formulário responsivo */
+        @media (max-width: 640px) {
+            .grid-responsivo {
+                grid-template-columns: 1fr;
+            }
+        }
